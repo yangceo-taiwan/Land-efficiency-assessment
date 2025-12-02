@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台南市土地開發效益評估儀表板 V3.2</title>
+    <title>台南市土地開發效益評估儀表板 V3.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* V3.1 專業白金配色 */
+            /* V3.3 專業白金配色 */
             --primary-navy: #0F2E46;    /* 宏國穩重藍 */
             --primary-gold: #C5A065;    /* 易丞質感金 */
             --bg-main: #F0F2F5;
@@ -459,8 +459,9 @@
                   `• 土地坪效：${eff} 倍\n\n` +
                   `想請教更詳細的稅務規劃與地政法規分析，謝謝！`;
 
-        // 請將下方連結替換為您的官方 LINE 連結
-        let lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+        // 使用 oaMessage 格式直接對應 @604gpqef
+        let lineUrl = `https://line.me/R/oaMessage/@604gpqef/?${encodeURIComponent(msg)}`;
+        
         window.open(lineUrl, '_blank');
     }
 
