@@ -3,222 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宏國地政｜易丞地政 - 土地開發決策系統</title>
+    <title>宏國地政|易丞地政 - 土地開發價值試算</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* 尊爵配色 */
             --primary-bg: #F5F7FA;
             --card-bg: #FFFFFF;
             --text-main: #2C3E50;
-            --text-sub: #7F8C8D;
-            
-            --brand-dark: #1A252F;    /* 質感黑 */
-            --brand-gold: #C5A065;    /* 香檳金 */
-            --brand-blue: #2980B9;    /* 專業藍 */
-            
-            --shadow-soft: 0 10px 40px rgba(0,0,0,0.08);
-            --shadow-hover: 0 15px 50px rgba(197, 160, 101, 0.15);
+            --text-sub: #606F7B;
+            --brand-dark: #1A252F;
+            --brand-gold: #C5A065;
+            --brand-gold-light: #E8D5B5;
+            --brand-blue: #2980B9;
+            --shadow-soft: 0 15px 35px rgba(26, 37, 47, 0.08);
             --radius: 16px;
         }
 
         * { box-sizing: border-box; outline: none; }
-        body { 
-            font-family: 'Noto Sans TC', sans-serif; 
-            background: var(--primary-bg); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 40px 20px; 
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* --- Header --- */
-        .header { text-align: center; margin-bottom: 40px; animation: fadeInDown 0.8s ease; }
-        .logo-group { margin-bottom: 15px; }
-        .logo-group img { height: 65px; margin: 0 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-        
-        .header h1 { 
-            margin: 15px 0 5px; 
-            line-height: 1.2;
+        .header {
+            background: linear-gradient(135deg, #1A252F 0%, #2C3E50 100%);
+            color: white;
+            padding: 45px 20px 80px; /* 增加底部 padding 讓 container 上移覆蓋 */
+            text-align: center;
+            position: relative;
         }
-        
-        /* 品牌中文名樣式 */
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 10px;
+            background: linear-gradient(to right, var(--brand-gold), #F0E1C7, var(--brand-gold));
+            opacity: 0.8;
+        }
+
+        .logo-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .logo-bar img {
+            height: 60px;
+            background: rgba(255,255,255,0.95);
+            padding: 6px 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        .logo-bar img:hover { transform: translateY(-3px); }
+
+        .header h1 { margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .brand-prefix {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--brand-gold);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
         .brand-name-cn {
             display: block;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-size: 1.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: var(--text-main);
+            letter-spacing: 2px;
             margin-bottom: 5px;
-            letter-spacing: 1px;
         }
-
-        /* 英文標題樣式 */
         .brand-name-en {
-            font-family: 'Playfair Display', serif; 
-            font-size: 2.2rem; 
-            color: var(--brand-dark); 
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            color: #BDC3C7;
             letter-spacing: 1px;
+            opacity: 0.8;
         }
 
-        .header .subtitle { 
-            color: var(--brand-gold); 
-            font-weight: 500; 
-            font-size: 1.1rem; 
-            letter-spacing: 2px; 
-            text-transform: uppercase;
-            margin-top: 10px;
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1100px;
+            margin: -50px auto 40px; /* 負邊距讓卡片往上蓋住 Header */
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+            flex-grow: 1;
         }
-
-        /* --- Layout --- */
-        .container { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            gap: 30px; 
+        @media(min-width: 900px) {
+            .container { 
+                grid-template-columns: 420px 1fr; 
+                align-items: start; /* 讓兩邊卡片依內容高度自然延伸 */
+            }
         }
-        @media(min-width: 900px) { .container { grid-template-columns: 450px 1fr; } }
 
         /* --- Cards --- */
-        .card { 
-            background: var(--card-bg); 
-            border-radius: var(--radius); 
-            padding: 30px; 
-            box-shadow: var(--shadow-soft); 
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.8);
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 35px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.5);
+            height: fit-content; /* 重要：讓卡片高度適應內容 */
         }
-        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--brand-dark), var(--brand-gold));
-        }
-
         .card-title {
-            font-size: 1.1rem; font-weight: 700; color: var(--brand-dark); margin-bottom: 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid #EEE; padding-bottom: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--brand-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F0F0F0;
         }
+        .card-title span i { color: var(--brand-blue); margin-right: 10px; }
 
         /* --- Inputs --- */
-        .input-group { margin-bottom: 15px; }
-        .label { 
-            display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); 
-            margin-bottom: 6px; 
+        .input-group { margin-bottom: 20px; }
+        .label {
+            display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-sub);
+            margin-bottom: 8px; letter-spacing: 0.5px;
         }
-        .input { 
-            width: 100%; padding: 10px 12px; 
-            border: 1px solid #E0E0E0; border-radius: 8px; 
-            font-size: 1rem; text-align: right; 
+        .input {
+            width: 100%; padding: 12px 15px;
+            border: 1px solid #E2E8F0; border-radius: 8px;
+            font-size: 1rem; text-align: right;
             font-family: 'Playfair Display', 'Noto Sans TC';
-            background: #FAFAFA; transition: 0.3s;
+            background: #FAFBFC; transition: all 0.3s;
+            color: var(--brand-dark);
+            font-weight: 500;
         }
-        .input:focus { 
-            border-color: var(--brand-gold); background: #FFF; 
-            box-shadow: 0 0 0 4px rgba(197, 160, 101, 0.1); 
+        .input:focus {
+            border-color: var(--brand-blue); background: #FFF;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
         }
-        .input-readonly { background: #F2F4F6; color: #999; border-color: transparent; }
-        select.input { text-align: left; cursor: pointer; }
+        .input-readonly { background: #F1F5F9; color: #94A3B8; border-color: transparent; cursor: default; }
+        select.input { text-align: left; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232980B9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px; }
 
-        .input-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; }
+        .input-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px; }
         .input-col { flex: 1; }
 
-        /* --- Advanced Calc Section --- */
+        /* --- Calc Sections --- */
         .calc-section {
-            background: #F9FAFB; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #EEE;
+            background: #F8FAFC; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #EEF2F6;
         }
-        .calc-section-title { font-size: 0.9rem; font-weight: bold; color: var(--brand-blue); margin-bottom: 10px; }
+        .calc-section-title { 
+            font-size: 0.9rem; font-weight: 700; color: var(--brand-dark); 
+            margin-bottom: 15px; display: flex; align-items: center; 
+        }
+        .calc-section-title i { color: var(--brand-gold); margin-right: 8px; }
 
-        /* --- Result Highlight Area --- */
+        /* --- Highlight Box --- */
         .highlight-box {
-            background: linear-gradient(145deg, #FFF9F0, #FFF);
-            border: 1px solid var(--brand-gold);
+            background: linear-gradient(135deg, #FFFEFB 0%, #FFF5E6 100%);
+            border: 1px solid var(--brand-gold-light);
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 25px;
+            margin-top: 25px;
             text-align: center;
+            box-shadow: 0 8px 20px rgba(197, 160, 101, 0.1);
+            position: relative;
+            overflow: hidden;
         }
-        .highlight-box label { color: var(--brand-gold); font-size: 0.9rem; font-weight: bold; }
-        
-        /* The Big Number Input (Editable) */
+        .highlight-box::before {
+            content: '\f201'; /* chart-line icon */
+            font-family: "Font Awesome 6 Free"; font-weight: 900;
+            position: absolute; top: -10px; right: 10px;
+            font-size: 5rem; color: var(--brand-gold); opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+        .highlight-box label { color: var(--brand-gold); font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 5px;}
         .big-input {
             width: 100%; border: none; background: transparent;
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem; font-weight: 700; color: var(--brand-dark);
+            font-size: 3.5rem; font-weight: 700; color: var(--brand-dark);
             text-align: center; margin: 5px 0; outline: none;
-            border-bottom: 2px dashed var(--brand-gold);
+            border-bottom: 2px dashed #E0E0E0; padding-bottom: 0;
+            transition: border 0.3s;
         }
         .big-input:focus { border-bottom: 2px solid var(--brand-gold); }
-
-        .btn-calc {
-            background: transparent; border: 1px solid var(--brand-dark); color: var(--brand-dark);
-            padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.2s;
-            margin-top: 5px;
-        }
-        .btn-calc:hover { background: var(--brand-dark); color: white; }
-
-        /* --- Visual Bars --- */
-        .bar-container { margin: 30px 0; }
-        .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-sub); }
-        .progress-bg { height: 12px; background: #EEE; border-radius: 6px; overflow: hidden; display:flex; }
-        .progress-seg { height: 100%; transition: width 1s ease; }
         
-        /* --- Efficiency Cards --- */
+        .reset-btn { color: #999; transition: color 0.3s; }
+        .reset-btn:hover { color: var(--brand-blue); }
+
+        .btn-restore {
+            font-size: 0.8rem; color: var(--brand-blue); background: rgba(41, 128, 185, 0.1);
+            border: none; padding: 4px 10px; border-radius: 20px; cursor: pointer; margin-left: 8px;
+            transition: all 0.2s;
+        }
+        .btn-restore:hover { background: var(--brand-blue); color: white; }
+
+        /* --- Analysis & Visuals (Right Side) --- */
+        .bar-container { margin: 10px 0 30px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; color: var(--text-sub); font-weight: 500; }
+        .progress-bg { height: 12px; background: #EDF2F7; border-radius: 6px; overflow: hidden; display:flex; }
+        .progress-seg { height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .legend { display: flex; gap: 15px; margin-top: 12px; font-size: 0.8rem; color: #94A3B8; }
+        .legend span { display: flex; align-items: center; }
+        .legend i { font-size: 0.6rem; margin-right: 6px; }
+
         .eff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .eff-item { 
-            background: #F8F9FA; padding: 15px; border-radius: 10px; text-align: center; 
-            border: 1px solid #EEE; transition: 0.3s;
+        .eff-item {
+            background: #FFFFFF; padding: 20px; border-radius: 12px; text-align: center;
+            border: 1px solid #EEF2F6; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
-        .eff-val { font-size: 1.6rem; font-weight: 700; color: var(--brand-dark); font-family: 'Playfair Display'; }
-        .eff-title { font-size: 0.8rem; color: var(--text-sub); margin-top: 5px; }
+        .eff-val { font-size: 1.8rem; font-weight: 700; color: var(--brand-dark); font-family: 'Playfair Display'; }
+        .eff-title { font-size: 0.85rem; color: var(--text-sub); margin-top: 5px; }
 
-        /* --- CTA Button --- */
-        .cta-container { text-align: center; margin-top: 20px; }
-        .btn-line {
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            background: #06C755; color: white; width: 100%; padding: 16px;
-            border-radius: 50px; font-size: 1.1rem; font-weight: 600; text-decoration: none;
-            box-shadow: 0 8px 20px rgba(6, 199, 85, 0.25); transition: all 0.3s ease; border: none; cursor: pointer;
+        /* --- Integrated CTA & Disclaimer (Moved to Right Card) --- */
+        .right-card-footer {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #EEF2F6;
         }
-        .btn-line:hover { background: #05B34C; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(6, 199, 85, 0.35); }
-
-        /* Animations */
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .card:nth-child(1) { animation: fadeInUp 0.6s ease 0.1s forwards; opacity: 0; }
-        .card:nth-child(2) { animation: fadeInUp 0.6s ease 0.3s forwards; opacity: 0; }
+        .btn-line {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: #06C755; color: white; width: 100%; padding: 16px;
+            border-radius: 12px; font-size: 1.05rem; font-weight: 700; text-decoration: none;
+            box-shadow: 0 8px 20px rgba(6, 199, 85, 0.2); transition: all 0.3s ease; border: none; cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .btn-line:hover { background: #05B34C; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(6, 199, 85, 0.35); }
+        
+        .disclaimer-box {
+            background: #FFFBF2;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #8D6E63;
+            line-height: 1.6;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .disclaimer-box i { color: #F59E0B; margin-top: 3px; font-size: 1rem; }
+
+        /* --- New Site Footer (Dark) --- */
+        .site-footer {
+            background: #1A252F;
+            color: #ECF0F1;
+            padding: 40px 20px;
+            margin-top: auto; /* Push to bottom */
+            text-align: center;
+            border-top: 4px solid var(--brand-gold);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .btn-social {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border-radius: 50px;
+            font-size: 0.9rem; text-decoration: none;
+            color: #1A252F; background: white;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .btn-social:hover { transform: translateY(-3px); background: var(--brand-gold); color: white; }
+        .btn-social i { font-size: 1.1rem; }
+
+        .copyright {
+            font-size: 0.75rem;
+            color: #7F8C8D;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
         @media print {
-            .btn-line, .btn-calc { display: none; }
+            .btn-line, .btn-restore, .reset-btn, .site-footer { display: none; }
             body { background: white; padding: 0; }
+            .container { margin-top: 0; }
             .card { box-shadow: none; border: 1px solid #000; }
+            .header { background: white; color: black; padding: 20px; }
+            .logo-bar img { background: none; box-shadow: none; }
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-group">
+    <div class="logo-bar">
         <img src="宏國地政封面.jpg" alt="宏國地政">
-        <img src="易丞logo-01.jpg" alt="易丞地政">
+        <img src="易丞logo-01.jpg" alt="易丞地政士事務所">
     </div>
     <h1>
-        <span class="brand-name-cn">宏國地政｜易丞地政</span>
-        <span class="brand-name-en">Premium Land Analysis</span>
+        <span class="brand-prefix">宏國地政｜易丞地政</span>
+        <span class="brand-name-cn">土地開發價值試算</span>
+        <span class="brand-name-en">Premium Land Efficiency Assessment System</span>
     </h1>
-    <div class="subtitle">土地開發價值・精準坪效評估</div>
 </div>
 
 <div class="container">
     
     <div class="card">
         <div class="card-title">
-            <span>1. 基地與容積設定</span>
-            <button onclick="reset()" style="background:none; border:none; color:#999; cursor:pointer; font-size:0.9rem;">↺ 重置</button>
+            <span><i class="fas fa-sliders-h"></i> 基地與容積設定</span>
+            <button onclick="reset()" class="reset-btn" style="background:none; border:none; cursor:pointer; font-size:0.85rem; display:flex; align-items:center;">
+                <i class="fas fa-undo-alt" style="margin-right:6px;"></i> 重置
+            </button>
         </div>
         
         <div class="input-row">
@@ -241,8 +343,7 @@
         </div>
 
         <div class="calc-section">
-            <div class="calc-section-title">法定參數設定</div>
-            
+            <div class="calc-section-title"><i class="fas fa-gavel"></i> 法定參數設定</div>
             <div class="input-row">
                 <div class="input-col">
                     <label class="label">法定建蔽率 %</label>
@@ -253,16 +354,15 @@
                     <input type="number" id="inBaseFAR" class="input" value="200" oninput="calc()">
                 </div>
             </div>
-            
-            <div class="input-group" style="text-align:right;">
-                <span style="font-size:0.85rem; color:var(--brand-blue); font-weight:bold;">
-                    最大單層面積：<span id="txtMaxFootprint">0</span> 坪
+            <div class="input-group" style="text-align:right; margin-bottom:0;">
+                <span style="font-size:0.85rem; color:var(--brand-blue); font-weight:600;">
+                    最大單層面積：<span id="txtMaxFootprint" style="font-family:'Playfair Display'; font-size:1.1rem;">0</span> 坪
                 </span>
             </div>
         </div>
 
         <div id="groupTouTian" class="calc-section">
-            <div class="calc-section-title">透天規劃細節</div>
+            <div class="calc-section-title"><i class="fas fa-home"></i> 透天規劃細節</div>
             <div class="input-row">
                 <div class="input-col">
                     <label class="label">規劃樓層</label>
@@ -273,11 +373,11 @@
                     <input type="number" id="inTouTianEff" class="input" value="1.15" step="0.05" oninput="calc()">
                 </div>
             </div>
-            <p style="font-size:0.75rem; color:#999; margin-top:5px;">*係數 1.15 含陽台(10%) + 屋突(12.5%)。</p>
+            <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 係數 1.15 含陽台(10%) + 屋突(12.5%)。</p>
         </div>
 
         <div id="groupDaLou" class="calc-section" style="display:none;">
-            <div class="calc-section-title">大樓容積堆疊 (Total Volume)</div>
+            <div class="calc-section-title"><i class="fas fa-building"></i> 大樓容積堆疊</div>
             <div class="input-row">
                 <div class="input-col">
                     <label class="label" style="color:var(--brand-gold);">+ 獎勵容積 %</label>
@@ -289,22 +389,19 @@
                 </div>
             </div>
             <div class="input-group">
-                <label class="label">銷坪係數 (Sales Coefficient)</label>
+                <label class="label">銷坪係數</label>
                 <input type="number" id="inEffFactor" class="input" value="1.45" step="0.05" oninput="calc()">
-                <p style="font-size:0.75rem; color:#999; margin-top:5px;">
-                    *係數 1.45~1.50 (含陽台/梯廳/機房)。若含車位坪數可設 1.6 以上。
-                </p>
+                <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 係數 1.45~1.50 (含陽台/梯廳/機房)。若含車位坪數可設 1.6 以上。</p>
             </div>
         </div>
 
         <div class="highlight-box">
             <label>★ 預估可銷售總建坪 (可手動修改)</label>
             <input type="number" id="outSaleArea" class="big-input" value="0" oninput="updateKPI()">
-            
             <div style="margin-top:10px;">
-                <span style="font-size:0.8rem; color:#999;">系統估算值：<span id="sysEstVal">0</span> 坪</span>
-                <button class="btn-calc" onclick="resetToEst()">
-                    ⟳ 恢復估算值
+                <span style="font-size:0.8rem; color:#94A3B8;">系統估算值：<span id="sysEstVal" style="font-weight:700; color:var(--brand-dark);">0</span> 坪</span>
+                <button class="btn-restore" onclick="resetToEst()">
+                    <i class="fas fa-sync-alt"></i> 恢復
                 </button>
             </div>
         </div>
@@ -312,24 +409,24 @@
 
     <div class="card">
         <div class="card-title">
-            <span>2. 開發效益分析</span>
-            <span style="font-size:0.8rem; color:#999; font-weight:normal;">Value Analysis</span>
+            <span><i class="fas fa-chart-pie"></i> 開發效益分析</span>
+            <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal; font-family:'Playfair Display'; letter-spacing:1px;">Value Analysis</span>
         </div>
         
         <div class="bar-container">
             <div class="bar-label">
                 <span>容積結構分析</span>
-                <span id="txtTotalVol">0%</span>
+                <span id="txtTotalVol" style="color:var(--brand-blue); font-weight:700;">0%</span>
             </div>
             <div class="progress-bg">
-                <div id="barBase" class="progress-seg" style="background:#BDC3C7; width:60%" title="法定"></div>
-                <div id="barBonus" class="progress-seg" style="background:var(--brand-gold); width:20%" title="獎勵"></div>
-                <div id="barTransfer" class="progress-seg" style="background:var(--brand-blue); width:20%" title="移轉"></div>
+                <div id="barBase" class="progress-seg" style="background:#BDC3C7; width:60%"></div>
+                <div id="barBonus" class="progress-seg" style="background:var(--brand-gold); width:20%"></div>
+                <div id="barTransfer" class="progress-seg" style="background:var(--brand-blue); width:20%"></div>
             </div>
-            <div class="bar-label" style="margin-top:5px; justify-content:flex-start; gap:15px; font-size:0.8rem;">
-                <span style="color:#7F8C8D">■ 法定</span>
-                <span style="color:var(--brand-gold)">■ 獎勵</span>
-                <span style="color:var(--brand-blue)">■ 移轉</span>
+            <div class="legend">
+                <span><i class="fas fa-square" style="color:#BDC3C7;"></i> 法定</span>
+                <span><i class="fas fa-square" style="color:var(--brand-gold);"></i> 獎勵</span>
+                <span><i class="fas fa-square" style="color:var(--brand-blue);"></i> 移轉</span>
             </div>
         </div>
 
@@ -344,28 +441,50 @@
             </div>
         </div>
 
-        <div style="border-top:1px solid #EEE; padding-top:20px; margin-top:20px;">
+        <div style="margin-top:20px; border-bottom:1px solid #EEE; padding-bottom:20px;">
             <label class="label" style="margin-bottom:10px;">參數設定說明</label>
-            <p style="font-size:0.85rem; color:#666; line-height:1.6;">
-                1. <strong>建蔽率 (BCR)</strong>：決定單層最大面積 (胖瘦)。<br>
-                2. <strong>容積率 (FAR)</strong>：決定總樓地板面積 (高矮)。<br>
-                3. <strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 1.15 (附屬)。<br>
-                4. <strong>大樓估算</strong>：地坪 × (法定+獎勵) × 1.45 (公設)。
-            </p>
+            <ul style="font-size:0.85rem; color:var(--text-sub); line-height:1.7; padding-left:20px; margin:0;">
+                <li><strong>建蔽率 (BCR)</strong>：決定單層最大面積 (胖瘦)。</li>
+                <li><strong>容積率 (FAR)</strong>：決定總樓地板面積 (高矮)。</li>
+                <li><strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 1.15 (附屬)。</li>
+                <li><strong>大樓估算</strong>：地坪 × (法定+獎勵) × 1.45 (公設)。</li>
+            </ul>
         </div>
 
-        <div class="cta-container">
+        <div class="right-card-footer">
             <button class="btn-line" onclick="sendToLine()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" width="24" height="24">
+                <i class="fab fa-line" style="font-size:1.6rem;"></i>
                 索取「稅後淨利」精算報告
             </button>
-            <p style="font-size:0.8rem; color:#999; margin-top:10px;">
-                點擊傳送試算數據，由專業團隊為您分析成本與利潤
-            </p>
+
+            <div class="disclaimer-box">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>免責聲明</strong><br>
+                    本試算結果僅依一般法規邏輯推算，未包含基地個別差異（如地形、指定建築線、地方自治條例等）之影響。實際開發效益請以開業建築師之詳細評估與簽證為準。
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
+
+<footer class="site-footer">
+    <div class="social-links">
+        <a href="https://maps.app.goo.gl/qyKhdrKsG5QBo2BW8" target="_blank" class="btn-social">
+            <i class="fas fa-map-marker-alt" style="color:#EA4335;"></i> Google 地圖
+        </a>
+        <a href="https://www.facebook.com/062582589a/" target="_blank" class="btn-social">
+            <i class="fab fa-facebook" style="color:#1877F2;"></i> FB 粉絲專頁
+        </a>
+        <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="btn-social">
+            <i class="fas fa-users" style="color:#E67E22;"></i> VIP 社群
+        </a>
+    </div>
+    <div class="copyright">
+        &copy; 2023 宏國地政｜易丞地政 All Rights Reserved.
+    </div>
+</footer>
 
 <script>
     const PING_TO_SQM = 3.305785;
