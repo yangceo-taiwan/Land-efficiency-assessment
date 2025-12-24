@@ -20,7 +20,11 @@
             --radius: 16px;
         }
 
-        * { box-sizing: border-box; outline: none; }
+        /* Nexus Note: Added user-select: none to body to prevent text copying */
+        * { box-sizing: border-box; outline: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        /* Re-enable selection for inputs so users can type */
+        input, textarea { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
+
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background: var(--primary-bg);
@@ -299,7 +303,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
 
 <div class="header">
     <div class="logo-bar">
@@ -482,7 +486,7 @@
         </a>
     </div>
     <div class="copyright">
-        &copy; 2023 宏國地政｜易丞地政 All Rights Reserved.
+        © 2023 宏國地政｜易丞地政 All Rights Reserved.
     </div>
 </footer>
 
@@ -664,6 +668,43 @@
 
     // Init
     calc();
+
+    /** * --- NEXUS SECURITY PROTOCOL ---
+     * Description: Prevents basic inspection and copying mechanisms.
+     */
+    (function() {
+        // 1. Disable Right Click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        }, false);
+
+        // 2. Disable Keyboard Shortcuts (F12, Ctrl+U, Ctrl+Shift+I, etc.)
+        document.onkeydown = function(e) {
+            // F12
+            if(e.keyCode == 123) {
+                return false;
+            }
+            // Ctrl+Shift+I (Inspector)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+C (Element Selector)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+J (Console)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                return false;
+            }
+        };
+        
+        // 3. Disable Drag/Drop of Images (Visual Protection)
+        document.ondragstart = function() { return false; };
+    })();
 </script>
 
 </body>
