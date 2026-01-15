@@ -20,9 +20,7 @@
             --radius: 16px;
         }
 
-        /* Nexus Note: Added user-select: none to body to prevent text copying */
         * { box-sizing: border-box; outline: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-        /* Re-enable selection for inputs so users can type */
         input, textarea { -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text; }
 
         body {
@@ -41,7 +39,7 @@
         .header {
             background: linear-gradient(135deg, #1A252F 0%, #2C3E50 100%);
             color: white;
-            padding: 45px 20px 80px; /* 增加底部 padding 讓 container 上移覆蓋 */
+            padding: 45px 20px 80px;
             text-align: center;
             position: relative;
         }
@@ -100,7 +98,7 @@
         /* --- Main Layout --- */
         .container {
             max-width: 1100px;
-            margin: -50px auto 40px; /* 負邊距讓卡片往上蓋住 Header */
+            margin: -50px auto 40px;
             padding: 0 20px;
             display: grid;
             grid-template-columns: 1fr;
@@ -112,7 +110,7 @@
         @media(min-width: 900px) {
             .container { 
                 grid-template-columns: 420px 1fr; 
-                align-items: start; /* 讓兩邊卡片依內容高度自然延伸 */
+                align-items: start;
             }
         }
 
@@ -123,7 +121,7 @@
             padding: 35px;
             box-shadow: var(--shadow-soft);
             border: 1px solid rgba(255,255,255,0.5);
-            height: fit-content; /* 重要：讓卡片高度適應內容 */
+            height: fit-content;
         }
         .card-title {
             font-size: 1.15rem;
@@ -173,6 +171,15 @@
         }
         .calc-section-title i { color: var(--brand-gold); margin-right: 8px; }
 
+        /* --- New Shape Factor Input Style --- */
+        .shape-input-container {
+            background: #FFF;
+            border: 1px dashed var(--brand-blue);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
         /* --- Highlight Box --- */
         .highlight-box {
             background: linear-gradient(135deg, #FFFEFB 0%, #FFF5E6 100%);
@@ -186,7 +193,7 @@
             overflow: hidden;
         }
         .highlight-box::before {
-            content: '\f201'; /* chart-line icon */
+            content: '\f201';
             font-family: "Font Awesome 6 Free"; font-weight: 900;
             position: absolute; top: -10px; right: 10px;
             font-size: 5rem; color: var(--brand-gold); opacity: 0.05;
@@ -213,7 +220,7 @@
         }
         .btn-restore:hover { background: var(--brand-blue); color: white; }
 
-        /* --- Analysis & Visuals (Right Side) --- */
+        /* --- Analysis & Visuals --- */
         .bar-container { margin: 10px 0 30px; }
         .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; color: var(--text-sub); font-weight: 500; }
         .progress-bg { height: 12px; background: #EDF2F7; border-radius: 6px; overflow: hidden; display:flex; }
@@ -230,7 +237,7 @@
         .eff-val { font-size: 1.8rem; font-weight: 700; color: var(--brand-dark); font-family: 'Playfair Display'; }
         .eff-title { font-size: 0.85rem; color: var(--text-sub); margin-top: 5px; }
 
-        /* --- Integrated CTA & Disclaimer (Moved to Right Card) --- */
+        /* --- Integrated CTA & Disclaimer --- */
         .right-card-footer {
             margin-top: 30px;
             padding-top: 30px;
@@ -257,16 +264,15 @@
         }
         .disclaimer-box i { color: #F59E0B; margin-top: 3px; font-size: 1rem; }
 
-        /* --- New Site Footer (Dark) --- */
+        /* --- Footer --- */
         .site-footer {
             background: #1A252F;
             color: #ECF0F1;
             padding: 40px 20px;
-            margin-top: auto; /* Push to bottom */
+            margin-top: auto;
             text-align: center;
             border-top: 4px solid var(--brand-gold);
         }
-        
         .social-links {
             display: flex;
             justify-content: center;
@@ -283,7 +289,6 @@
         }
         .btn-social:hover { transform: translateY(-3px); background: var(--brand-gold); color: white; }
         .btn-social i { font-size: 1.1rem; }
-
         .copyright {
             font-size: 0.75rem;
             color: #7F8C8D;
@@ -350,12 +355,12 @@
             <div class="calc-section-title"><i class="fas fa-gavel"></i> 法定參數設定</div>
             <div class="input-row">
                 <div class="input-col">
-                    <label class="label">法定建蔽率 %</label>
+                    <label class="label">建蔽率 %</label>
                     <input type="number" id="inBCR" class="input" value="60" oninput="calc()">
                 </div>
                 <div class="input-col">
-                    <label class="label">法定容積率 %</label>
-                    <input type="number" id="inBaseFAR" class="input" value="200" oninput="calc()">
+                    <label class="label">容積率 %</label>
+                    <input type="number" id="inBaseFAR" class="input" value="180" oninput="calc()">
                 </div>
             </div>
             <div class="input-group" style="text-align:right; margin-bottom:0;">
@@ -374,10 +379,24 @@
                 </div>
                 <div class="input-col">
                     <label class="label">附屬係數</label>
-                    <input type="number" id="inTouTianEff" class="input" value="1.15" step="0.05" oninput="calc()">
+                    <input type="number" id="inTouTianEff" class="input" value="1.00" step="0.05" oninput="calc()">
                 </div>
             </div>
-            <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 係數 1.15 含陽台(10%) + 屋突(12.5%)。</p>
+            
+            <div class="shape-input-container">
+                <label class="label" style="color:var(--brand-blue);">
+                    <i class="fas fa-vector-square"></i> 土地完整度修正 %
+                </label>
+                <input type="number" id="inShapeEff" class="input" value="100" max="100" min="10" step="5" oninput="calc()">
+                <div style="font-size:0.75rem; color:#606F7B; margin-top:8px; line-height:1.4;">
+                    <i class="fas fa-info-circle"></i> 修正說明：<br>
+                    • 100%：土地方正，無地形損耗。<br>
+                    • 85~95%：略有缺角、需退縮或非正矩形。<br>
+                    • 70~80%：畸零地、三角形或既成巷道影響。
+                </div>
+            </div>
+
+            <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 總坪數 = 地坪 × 建蔽 × 樓層 × 附屬係數 × 完整度。</p>
         </div>
 
         <div id="groupDaLou" class="calc-section" style="display:none;">
@@ -450,7 +469,8 @@
             <ul style="font-size:0.85rem; color:var(--text-sub); line-height:1.7; padding-left:20px; margin:0;">
                 <li><strong>建蔽率 (BCR)</strong>：決定單層最大面積 (胖瘦)。</li>
                 <li><strong>容積率 (FAR)</strong>：決定總樓地板面積 (高矮)。</li>
-                <li><strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 1.15 (附屬)。</li>
+                <li><strong>完整度修正</strong>：針對地形不方正或法規退縮造成之損耗。</li>
+                <li><strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 附屬係數 × 完整度。</li>
                 <li><strong>大樓估算</strong>：地坪 × (法定+獎勵) × 1.45 (公設)。</li>
             </ul>
         </div>
@@ -516,6 +536,7 @@
         // Tou-Tian Inputs
         floors: document.getElementById('inFloors'),
         touTianEff: document.getElementById('inTouTianEff'),
+        shapeEff: document.getElementById('inShapeEff'), // Nexus Added
 
         // Output
         outSaleArea: document.getElementById('outSaleArea'),
@@ -535,8 +556,11 @@
 
     function reset() {
         ui.ping.value = 52;
-        ui.baseFAR.value = 200;
+        ui.baseFAR.value = 180;
         ui.bcr.value = 60;
+        ui.floors.value = 4;
+        ui.touTianEff.value = 1.00;
+        ui.shapeEff.value = 100; // Reset shape factor
         ui.bonusFAR.value = 20;
         ui.transferFAR.value = 0;
         ui.effFactor.value = 1.45;
@@ -596,9 +620,10 @@
             estArea = totalVolArea * factor;
 
         } else {
-            // 透天邏輯: 地坪 * 建蔽 * 樓層 * 係數
+            // 透天邏輯: 地坪 * 建蔽 * 樓層 * 係數 * 形狀修正
             let floors = parseFloat(ui.floors.value) || 0;
-            let factor = parseFloat(ui.touTianEff.value) || 1.15;
+            let factor = parseFloat(ui.touTianEff.value) || 1.0;
+            let shapeEff = parseFloat(ui.shapeEff.value) || 100; // Nexus: Get shape efficiency
 
             // 透天顯示建蔽結構 (隱藏 Bar 或改用途)
             ui.barBase.style.width = "100%";
@@ -606,7 +631,8 @@
             ui.barTransfer.style.width = "0%";
             ui.txtTotalVol.innerText = "透天依建蔽率與樓層計算";
 
-            baseVolArea = maxFootprint * floors; // 主建物 (單層 x 樓層)
+            // Nexus Formula Update: Multiply by shape efficiency percentage
+            baseVolArea = (maxFootprint * floors) * (shapeEff / 100); 
             estArea = baseVolArea * factor;
         }
 
@@ -630,7 +656,6 @@
         ui.valEff.innerText = eff.toFixed(2);
 
         // 2. 創造價值 (Sales Area - Statutory Area)
-        // 需重新計算 Statutory Area 供比較
         let type = ui.type.value;
         let statArea = 0;
         
@@ -638,9 +663,12 @@
             let base = parseFloat(ui.baseFAR.value) || 0;
             statArea = ping * (base / 100);
         } else {
+            // For comparison, statutory area should also reflect the shape loss 
+            // because if you can't build it, it's not really statutory "usable" area in this context
             let bcr = parseFloat(ui.bcr.value) || 0;
             let floors = parseFloat(ui.floors.value) || 0;
-            statArea = ping * (bcr/100) * floors;
+            let shapeEff = parseFloat(ui.shapeEff.value) || 100;
+            statArea = ping * (bcr/100) * floors * (shapeEff / 100);
         }
 
         let added = realArea - statArea;
@@ -669,40 +697,14 @@
     // Init
     calc();
 
-    /** * --- NEXUS SECURITY PROTOCOL ---
-     * Description: Prevents basic inspection and copying mechanisms.
-     */
+    /** * --- NEXUS SECURITY PROTOCOL --- */
     (function() {
-        // 1. Disable Right Click
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        }, false);
-
-        // 2. Disable Keyboard Shortcuts (F12, Ctrl+U, Ctrl+Shift+I, etc.)
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
         document.onkeydown = function(e) {
-            // F12
-            if(e.keyCode == 123) {
-                return false;
-            }
-            // Ctrl+Shift+I (Inspector)
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-                return false;
-            }
-            // Ctrl+Shift+C (Element Selector)
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-                return false;
-            }
-            // Ctrl+Shift+J (Console)
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-                return false;
-            }
-            // Ctrl+U (View Source)
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-                return false;
-            }
+            if(e.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         };
-        
-        // 3. Disable Drag/Drop of Images (Visual Protection)
         document.ondragstart = function() { return false; };
     })();
 </script>
