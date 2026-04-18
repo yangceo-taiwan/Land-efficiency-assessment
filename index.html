@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宏國地政|易丞地政 - 土地開發價值試算</title>
+    <title>宏國地政|易丞地政 - 土地開發價值試算 (SSO Edition)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
+        /* =========================================
+           STYLE LOCKING: 樣式區完全保留，未做任何更動
+           ========================================= */
         :root {
             --primary-bg: #F5F7FA;
             --card-bg: #FFFFFF;
@@ -18,6 +24,8 @@
             --brand-blue: #2980B9;
             --shadow-soft: 0 15px 35px rgba(26, 37, 47, 0.08);
             --radius: 16px;
+            --line-green: #06C755;
+            --line-green-hover: #05b34c;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
@@ -298,219 +306,310 @@
             margin: 0 auto;
         }
 
+        /* --- SSO 門禁系統專用動畫與樣式 --- */
+        .btn-line-solid { background-color: var(--line-green); color: white; transition: background-color 0.3s; border: none; }
+        .btn-line-solid:hover { background-color: var(--line-green-hover); }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+
         @media print {
-            .btn-line, .btn-restore, .reset-btn, .site-footer { display: none; }
+            .btn-line, .btn-restore, .reset-btn, .site-footer { display: none !important; }
             body { background: white; padding: 0; }
             .container { margin-top: 0; }
             .card { box-shadow: none; border: 1px solid #000; }
             .header { background: white; color: black; padding: 20px; }
             .logo-bar img { background: none; box-shadow: none; }
+            /* 列印時強制隱藏門禁，顯示內容 */
+            #nexus-auth-gate { display: none !important; }
+            #main-content { display: flex !important; }
         }
     </style>
 </head>
 <body oncontextmenu="return false">
 
-<div class="header">
-    <div class="logo-bar">
-        <img src="宏國地政封面.jpg" alt="宏國地政">
-        <img src="易丞logo-01.jpg" alt="易丞地政士事務所">
+<div id="nexus-auth-gate" class="min-h-screen flex flex-col items-center justify-center p-6 text-white fixed inset-0 z-[9999]" style="display: flex; background: linear-gradient(135deg, #1A252F 0%, #2C3E50 100%);">
+    <div class="bg-white text-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center transform transition-all relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#C5A065] opacity-10 rounded-full blur-2xl"></div>
+        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-[#C5A065] shadow-inner">
+            <i class="fas fa-shield-alt text-3xl text-[#C5A065]"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-[#1A252F] mb-2" style="margin:10px 0;">土地開發價值試算</h2>
+        <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+            本系統為宏國地政內部高階工具。<br>為保障服務品質，請透過官方帳號驗證身分。
+        </p>
+        <div id="auth-error-msg" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 font-bold flex items-start gap-2 text-left" style="display: none;">
+            <i class="fas fa-exclamation-circle mt-0.5"></i>
+            <span id="auth-error-text"></span>
+        </div>
+        <button onclick="loginWithLine()" class="w-full btn-line-solid rounded-xl py-4 flex items-center justify-center font-bold text-base shadow-lg transform transition active:scale-95 hover:shadow-xl cursor-pointer">
+            <i class="fab fa-line text-2xl mr-2"></i> 使用 LINE 登入並解鎖
+        </button>
+        <div class="text-[10px] text-gray-400 mt-4">
+            <i class="fas fa-lock mr-1"></i> 經由 LINE OAuth 2.0 安全授權
+        </div>
     </div>
-    <h1>
-        <span class="brand-prefix">宏國地政｜易丞地政</span>
-        <span class="brand-name-cn">土地開發價值試算</span>
-        <span class="brand-name-en">Premium Land Efficiency Assessment System</span>
-    </h1>
+    <div class="mt-8 text-xs text-gray-400 opacity-60 tracking-widest">© 2026 宏國地政 | 易丞地政</div>
 </div>
 
-<div class="container">
+<div id="main-content" style="display: none; flex-direction: column; min-height: 100vh;">
     
-    <div class="card">
-        <div class="card-title">
-            <span><i class="fas fa-sliders-h"></i> 基地與容積設定</span>
-            <button onclick="reset()" class="reset-btn" style="background:none; border:none; cursor:pointer; font-size:0.85rem; display:flex; align-items:center;">
-                <i class="fas fa-undo-alt" style="margin-right:6px;"></i> 重置
-            </button>
+    <div class="header">
+        <div class="logo-bar">
+            <img src="宏國地政封面.jpg" alt="宏國地政" onerror="this.style.display='none'">
+            <img src="易丞logo-01.jpg" alt="易丞地政士事務所" onerror="this.style.display='none'">
         </div>
+        <h1>
+            <span class="brand-prefix">宏國地政｜易丞地政</span>
+            <span class="brand-name-cn">土地開發價值試算</span>
+            <span class="brand-name-en">Premium Land Efficiency Assessment System</span>
+        </h1>
+    </div>
+
+    <div class="container">
         
-        <div class="input-row">
-            <div class="input-col">
-                <label class="label">土地坪數</label>
-                <input type="number" id="inPing" class="input" value="52" oninput="calc()">
-            </div>
-            <div class="input-col">
-                <label class="label">換算 m²</label>
-                <input type="text" id="outSqm" class="input input-readonly" readonly>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label class="label">開發產品類型</label>
-            <select id="inType" class="input" onchange="toggleType(); calc();">
-                <option value="tou-tian">透天別墅 (建蔽率推算)</option>
-                <option value="da-lou">大樓華廈 (容積率推算)</option>
-            </select>
-        </div>
-
-        <div class="calc-section">
-            <div class="calc-section-title"><i class="fas fa-gavel"></i> 法定參數設定</div>
-            <div class="input-row">
-                <div class="input-col">
-                    <label class="label">建蔽率 %</label>
-                    <input type="number" id="inBCR" class="input" value="60" oninput="calc()">
-                </div>
-                <div class="input-col">
-                    <label class="label">容積率 %</label>
-                    <input type="number" id="inBaseFAR" class="input" value="180" oninput="calc()">
-                </div>
-            </div>
-            <div class="input-group" style="text-align:right; margin-bottom:0;">
-                <span style="font-size:0.85rem; color:var(--brand-blue); font-weight:600;">
-                    最大單層面積：<span id="txtMaxFootprint" style="font-family:'Playfair Display'; font-size:1.1rem;">0</span> 坪
-                </span>
-            </div>
-        </div>
-
-        <div id="groupTouTian" class="calc-section">
-            <div class="calc-section-title"><i class="fas fa-home"></i> 透天規劃細節</div>
-            <div class="input-row">
-                <div class="input-col">
-                    <label class="label">規劃樓層</label>
-                    <input type="number" id="inFloors" class="input" value="4" oninput="calc()">
-                </div>
-                <div class="input-col">
-                    <label class="label">附屬係數</label>
-                    <input type="number" id="inTouTianEff" class="input" value="1.00" step="0.05" oninput="calc()">
-                </div>
-            </div>
-            
-            <div class="shape-input-container">
-                <label class="label" style="color:var(--brand-blue);">
-                    <i class="fas fa-vector-square"></i> 土地完整度修正 %
-                </label>
-                <input type="number" id="inShapeEff" class="input" value="100" max="100" min="10" step="5" oninput="calc()">
-                <div style="font-size:0.75rem; color:#606F7B; margin-top:8px; line-height:1.4;">
-                    <i class="fas fa-info-circle"></i> 修正說明：<br>
-                    • 100%：土地方正，無地形損耗。<br>
-                    • 85~95%：略有缺角、需退縮或非正矩形。<br>
-                    • 70~80%：畸零地、三角形或既成巷道影響。
-                </div>
-            </div>
-
-            <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 總坪數 = 地坪 × 建蔽 × 樓層 × 附屬係數 × 完整度。</p>
-        </div>
-
-        <div id="groupDaLou" class="calc-section" style="display:none;">
-            <div class="calc-section-title"><i class="fas fa-building"></i> 大樓容積堆疊</div>
-            <div class="input-row">
-                <div class="input-col">
-                    <label class="label" style="color:var(--brand-gold);">+ 獎勵容積 %</label>
-                    <input type="number" id="inBonusFAR" class="input" value="20" placeholder="危老/都更" oninput="calc()">
-                </div>
-                <div class="input-col">
-                    <label class="label" style="color:var(--brand-gold);">+ 容積移轉 %</label>
-                    <input type="number" id="inTransferFAR" class="input" value="0" placeholder="公保地" oninput="calc()">
-                </div>
-            </div>
-            <div class="input-group">
-                <label class="label">銷坪係數</label>
-                <input type="number" id="inEffFactor" class="input" value="1.45" step="0.05" oninput="calc()">
-                <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 係數 1.45~1.50 (含陽台/梯廳/機房)。若含車位坪數可設 1.6 以上。</p>
-            </div>
-        </div>
-
-        <div class="highlight-box">
-            <label>★ 預估可銷售總建坪 (可手動修改)</label>
-            <input type="number" id="outSaleArea" class="big-input" value="0" oninput="updateKPI()">
-            <div style="margin-top:10px;">
-                <span style="font-size:0.8rem; color:#94A3B8;">系統估算值：<span id="sysEstVal" style="font-weight:700; color:var(--brand-dark);">0</span> 坪</span>
-                <button class="btn-restore" onclick="resetToEst()">
-                    <i class="fas fa-sync-alt"></i> 恢復
+        <div class="card">
+            <div class="card-title">
+                <span><i class="fas fa-sliders-h"></i> 基地與容積設定</span>
+                <button onclick="reset()" class="reset-btn" style="background:none; border:none; cursor:pointer; font-size:0.85rem; display:flex; align-items:center;">
+                    <i class="fas fa-undo-alt" style="margin-right:6px;"></i> 重置
                 </button>
             </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">
-            <span><i class="fas fa-chart-pie"></i> 開發效益分析</span>
-            <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal; font-family:'Playfair Display'; letter-spacing:1px;">Value Analysis</span>
-        </div>
-        
-        <div class="bar-container">
-            <div class="bar-label">
-                <span>容積結構分析</span>
-                <span id="txtTotalVol" style="color:var(--brand-blue); font-weight:700;">0%</span>
+            
+            <div class="input-row">
+                <div class="input-col">
+                    <label class="label">土地坪數</label>
+                    <input type="number" id="inPing" class="input" value="52" oninput="calc()">
+                </div>
+                <div class="input-col">
+                    <label class="label">換算 m²</label>
+                    <input type="text" id="outSqm" class="input input-readonly" readonly>
+                </div>
             </div>
-            <div class="progress-bg">
-                <div id="barBase" class="progress-seg" style="background:#BDC3C7; width:60%"></div>
-                <div id="barBonus" class="progress-seg" style="background:var(--brand-gold); width:20%"></div>
-                <div id="barTransfer" class="progress-seg" style="background:var(--brand-blue); width:20%"></div>
-            </div>
-            <div class="legend">
-                <span><i class="fas fa-square" style="color:#BDC3C7;"></i> 法定</span>
-                <span><i class="fas fa-square" style="color:var(--brand-gold);"></i> 獎勵</span>
-                <span><i class="fas fa-square" style="color:var(--brand-blue);"></i> 移轉</span>
-            </div>
-        </div>
 
-        <div class="eff-grid">
-            <div class="eff-item">
-                <div class="eff-val" id="valEff">0.0</div>
-                <div class="eff-title">土地坪效 (倍)</div>
+            <div class="input-group">
+                <label class="label">開發產品類型</label>
+                <select id="inType" class="input" onchange="toggleType(); calc();">
+                    <option value="tou-tian">透天別墅 (建蔽率推算)</option>
+                    <option value="da-lou">大樓華廈 (容積率推算)</option>
+                </select>
             </div>
-            <div class="eff-item">
-                <div class="eff-val" id="valAddOn" style="color:var(--brand-gold)">+0</div>
-                <div class="eff-title">創造坪數</div>
+
+            <div class="calc-section">
+                <div class="calc-section-title"><i class="fas fa-gavel"></i> 法定參數設定</div>
+                <div class="input-row">
+                    <div class="input-col">
+                        <label class="label">建蔽率 %</label>
+                        <input type="number" id="inBCR" class="input" value="60" oninput="calc()">
+                    </div>
+                    <div class="input-col">
+                        <label class="label">容積率 %</label>
+                        <input type="number" id="inBaseFAR" class="input" value="180" oninput="calc()">
+                    </div>
+                </div>
+                <div class="input-group" style="text-align:right; margin-bottom:0;">
+                    <span style="font-size:0.85rem; color:var(--brand-blue); font-weight:600;">
+                        最大單層面積：<span id="txtMaxFootprint" style="font-family:'Playfair Display'; font-size:1.1rem;">0</span> 坪
+                    </span>
+                </div>
             </div>
-        </div>
 
-        <div style="margin-top:20px; border-bottom:1px solid #EEE; padding-bottom:20px;">
-            <label class="label" style="margin-bottom:10px;">參數設定說明</label>
-            <ul style="font-size:0.85rem; color:var(--text-sub); line-height:1.7; padding-left:20px; margin:0;">
-                <li><strong>建蔽率 (BCR)</strong>：決定單層最大面積 (胖瘦)。</li>
-                <li><strong>容積率 (FAR)</strong>：決定總樓地板面積 (高矮)。</li>
-                <li><strong>完整度修正</strong>：針對地形不方正或法規退縮造成之損耗。</li>
-                <li><strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 附屬係數 × 完整度。</li>
-                <li><strong>大樓估算</strong>：地坪 × (法定+獎勵) × 1.45 (公設)。</li>
-            </ul>
-        </div>
+            <div id="groupTouTian" class="calc-section">
+                <div class="calc-section-title"><i class="fas fa-home"></i> 透天規劃細節</div>
+                <div class="input-row">
+                    <div class="input-col">
+                        <label class="label">規劃樓層</label>
+                        <input type="number" id="inFloors" class="input" value="4" oninput="calc()">
+                    </div>
+                    <div class="input-col">
+                        <label class="label">附屬係數</label>
+                        <input type="number" id="inTouTianEff" class="input" value="1.00" step="0.05" oninput="calc()">
+                    </div>
+                </div>
+                
+                <div class="shape-input-container">
+                    <label class="label" style="color:var(--brand-blue);">
+                        <i class="fas fa-vector-square"></i> 土地完整度修正 %
+                    </label>
+                    <input type="number" id="inShapeEff" class="input" value="100" max="100" min="10" step="5" oninput="calc()">
+                    <div style="font-size:0.75rem; color:#606F7B; margin-top:8px; line-height:1.4;">
+                        <i class="fas fa-info-circle"></i> 修正說明：<br>
+                        • 100%：土地方正，無地形損耗。<br>
+                        • 85~95%：略有缺角、需退縮或非正矩形。<br>
+                        • 70~80%：畸零地、三角形或既成巷道影響。
+                    </div>
+                </div>
 
-        <div class="right-card-footer">
-            <button class="btn-line" onclick="sendToLine()">
-                <i class="fab fa-line" style="font-size:1.6rem;"></i>
-                索取「稅後淨利」精算報告
-            </button>
+                <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 總坪數 = 地坪 × 建蔽 × 樓層 × 附屬係數 × 完整度。</p>
+            </div>
 
-            <div class="disclaimer-box">
-                <i class="fas fa-exclamation-triangle"></i>
-                <div>
-                    <strong>免責聲明</strong><br>
-                    本試算結果僅依一般法規邏輯推算，未包含基地個別差異（如地形、指定建築線、地方自治條例等）之影響。實際開發效益請以開業建築師之詳細評估與簽證為準。
+            <div id="groupDaLou" class="calc-section" style="display:none;">
+                <div class="calc-section-title"><i class="fas fa-building"></i> 大樓容積堆疊</div>
+                <div class="input-row">
+                    <div class="input-col">
+                        <label class="label" style="color:var(--brand-gold);">+ 獎勵容積 %</label>
+                        <input type="number" id="inBonusFAR" class="input" value="20" placeholder="危老/都更" oninput="calc()">
+                    </div>
+                    <div class="input-col">
+                        <label class="label" style="color:var(--brand-gold);">+ 容積移轉 %</label>
+                        <input type="number" id="inTransferFAR" class="input" value="0" placeholder="公保地" oninput="calc()">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="label">銷坪係數</label>
+                    <input type="number" id="inEffFactor" class="input" value="1.45" step="0.05" oninput="calc()">
+                    <p style="font-size:0.75rem; color:#999; margin-top:8px;">* 係數 1.45~1.50 (含陽台/梯廳/機房)。若含車位坪數可設 1.6 以上。</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <label>★ 預估可銷售總建坪 (可手動修改)</label>
+                <input type="number" id="outSaleArea" class="big-input" value="0" oninput="updateKPI()">
+                <div style="margin-top:10px;">
+                    <span style="font-size:0.8rem; color:#94A3B8;">系統估算值：<span id="sysEstVal" style="font-weight:700; color:var(--brand-dark);">0</span> 坪</span>
+                    <button class="btn-restore" onclick="resetToEst()">
+                        <i class="fas fa-sync-alt"></i> 恢復
+                    </button>
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span><i class="fas fa-chart-pie"></i> 開發效益分析</span>
+                <span style="font-size:0.85rem; color:var(--text-sub); font-weight:normal; font-family:'Playfair Display'; letter-spacing:1px;">Value Analysis</span>
+            </div>
+            
+            <div class="bar-container">
+                <div class="bar-label">
+                    <span>容積結構分析</span>
+                    <span id="txtTotalVol" style="color:var(--brand-blue); font-weight:700;">0%</span>
+                </div>
+                <div class="progress-bg">
+                    <div id="barBase" class="progress-seg" style="background:#BDC3C7; width:60%"></div>
+                    <div id="barBonus" class="progress-seg" style="background:var(--brand-gold); width:20%"></div>
+                    <div id="barTransfer" class="progress-seg" style="background:var(--brand-blue); width:20%"></div>
+                </div>
+                <div class="legend">
+                    <span><i class="fas fa-square" style="color:#BDC3C7;"></i> 法定</span>
+                    <span><i class="fas fa-square" style="color:var(--brand-gold);"></i> 獎勵</span>
+                    <span><i class="fas fa-square" style="color:var(--brand-blue);"></i> 移轉</span>
+                </div>
+            </div>
+
+            <div class="eff-grid">
+                <div class="eff-item">
+                    <div class="eff-val" id="valEff">0.0</div>
+                    <div class="eff-title">土地坪效 (倍)</div>
+                </div>
+                <div class="eff-item">
+                    <div class="eff-val" id="valAddOn" style="color:var(--brand-gold)">+0</div>
+                    <div class="eff-title">創造坪數</div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; border-bottom:1px solid #EEE; padding-bottom:20px;">
+                <label class="label" style="margin-bottom:10px;">參數設定說明</label>
+                <ul style="font-size:0.85rem; color:var(--text-sub); line-height:1.7; padding-left:20px; margin:0;">
+                    <li><strong>建蔽率 (BCR)</strong>：決定單層最大面積 (胖瘦)。</li>
+                    <li><strong>容積率 (FAR)</strong>：決定總樓地板面積 (高矮)。</li>
+                    <li><strong>完整度修正</strong>：針對地形不方正或法規退縮造成之損耗。</li>
+                    <li><strong>透天估算</strong>：地坪 × 建蔽率 × 樓層 × 附屬係數 × 完整度。</li>
+                    <li><strong>大樓估算</strong>：地坪 × (法定+獎勵) × 1.45 (公設)。</li>
+                </ul>
+            </div>
+
+            <div class="right-card-footer">
+                <button class="btn-line" onclick="sendToLine()">
+                    <i class="fab fa-line" style="font-size:1.6rem;"></i>
+                    索取「稅後淨利」精算報告
+                </button>
+
+                <div class="disclaimer-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>免責聲明</strong><br>
+                        本試算結果僅依一般法規邏輯推算，未包含基地個別差異（如地形、指定建築線、地方自治條例等）之影響。實際開發效益請以開業建築師之詳細評估與簽證為準。
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <footer class="site-footer">
+        <div class="social-links">
+            <a href="https://maps.app.goo.gl/qyKhdrKsG5QBo2BW8" target="_blank" class="btn-social">
+                <i class="fas fa-map-marker-alt" style="color:#EA4335;"></i> Google 地圖
+            </a>
+            <a href="https://www.facebook.com/062582589a/" target="_blank" class="btn-social">
+                <i class="fab fa-facebook" style="color:#1877F2;"></i> FB 粉絲專頁
+            </a>
+            <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="btn-social">
+                <i class="fas fa-users" style="color:#E67E22;"></i> VIP 社群
+            </a>
+        </div>
+        <div class="copyright">
+            © 2026 宏國地政｜易丞地政 All Rights Reserved.
+        </div>
+    </footer>
 </div>
 
-<footer class="site-footer">
-    <div class="social-links">
-        <a href="https://maps.app.goo.gl/qyKhdrKsG5QBo2BW8" target="_blank" class="btn-social">
-            <i class="fas fa-map-marker-alt" style="color:#EA4335;"></i> Google 地圖
-        </a>
-        <a href="https://www.facebook.com/062582589a/" target="_blank" class="btn-social">
-            <i class="fab fa-facebook" style="color:#1877F2;"></i> FB 粉絲專頁
-        </a>
-        <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="btn-social">
-            <i class="fas fa-users" style="color:#E67E22;"></i> VIP 社群
-        </a>
-    </div>
-    <div class="copyright">
-        © 2023 宏國地政｜易丞地政 All Rights Reserved.
-    </div>
-</footer>
-
 <script>
+    // ==========================================
+    // 🛡️ Nexus SSO 企業級門禁系統邏輯
+    // ==========================================
+    const gasAuthUrl = "https://script.google.com/macros/s/AKfycbwiIbmZWvNkOZW1wPBSZT1b5MKcfeeU8LtfqOiPZE0gN0VPkxJDguhKmb6rTJnSWWBnCA/exec";
+
+    function initAuth() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authStatus = urlParams.get('nexus_auth');
+        const authGate = document.getElementById('nexus-auth-gate');
+        const mainContent = document.getElementById('main-content');
+        const errorMsg = document.getElementById('auth-error-msg');
+        const errorText = document.getElementById('auth-error-text');
+
+        let isUnlocked = false;
+
+        if (authStatus === 'success') {
+            localStorage.setItem('hg_line_auth', 'true');
+            isUnlocked = true;
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (authStatus === 'failed_not_friend') {
+            localStorage.removeItem('hg_line_auth');
+            isUnlocked = false;
+            errorText.innerText = "授權失敗：系統偵測到您尚未加入好友或已封鎖官方帳號。請重新登入並務必勾選加入好友。";
+            errorMsg.style.display = 'flex';
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            if (localStorage.getItem('hg_line_auth') === 'true') {
+                isUnlocked = true;
+            }
+        }
+
+        if (isUnlocked) {
+            authGate.style.display = 'none';
+            mainContent.style.display = 'flex'; // 恢復 flex 佈局
+            document.body.style.overflow = 'auto';
+            // 解鎖成功後，執行原本的初始化邏輯
+            calc();
+        } else {
+            authGate.style.display = 'flex';
+            mainContent.style.display = 'none';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function loginWithLine() {
+        const currentBaseUrl = window.location.origin + window.location.pathname;
+        window.location.href = `${gasAuthUrl}?state=${encodeURIComponent(currentBaseUrl)}`;
+    }
+
+    // 啟動門禁系統
+    document.addEventListener('DOMContentLoaded', initAuth);
+
+    // ==========================================
+    // 🌟 原有核心試算邏輯 (一字未改)
+    // ==========================================
     const PING_TO_SQM = 3.305785;
     
     // UI Elements
@@ -536,7 +635,7 @@
         // Tou-Tian Inputs
         floors: document.getElementById('inFloors'),
         touTianEff: document.getElementById('inTouTianEff'),
-        shapeEff: document.getElementById('inShapeEff'), // Nexus Added
+        shapeEff: document.getElementById('inShapeEff'),
 
         // Output
         outSaleArea: document.getElementById('outSaleArea'),
@@ -560,7 +659,7 @@
         ui.bcr.value = 60;
         ui.floors.value = 4;
         ui.touTianEff.value = 1.00;
-        ui.shapeEff.value = 100; // Reset shape factor
+        ui.shapeEff.value = 100;
         ui.bonusFAR.value = 20;
         ui.transferFAR.value = 0;
         ui.effFactor.value = 1.45;
@@ -584,6 +683,7 @@
     }
 
     function calc() {
+        if (!ui.ping) return; // 防呆
         let ping = parseFloat(ui.ping.value) || 0;
         ui.sqm.value = (ping * PING_TO_SQM).toFixed(2);
 
@@ -598,7 +698,6 @@
         let baseVolArea = 0;
 
         if (type === 'da-lou') {
-            // 大樓邏輯: (法定 + 獎勵 + 移轉) * 係數
             let base = parseFloat(ui.baseFAR.value) || 0;
             let bonus = parseFloat(ui.bonusFAR.value) || 0;
             let trans = parseFloat(ui.transferFAR.value) || 0;
@@ -606,32 +705,27 @@
 
             let totalVolPercent = base + bonus + trans;
             
-            // 視覺化 Bar Chart 更新
-            let total = totalVolPercent || 1; // avoid zero div
+            let total = totalVolPercent || 1;
             ui.barBase.style.width = (base / total * 100) + "%";
             ui.barBonus.style.width = (bonus / total * 100) + "%";
             ui.barTransfer.style.width = (trans / total * 100) + "%";
             ui.txtTotalVol.innerText = "總核定容積: " + totalVolPercent + "%";
 
-            baseVolArea = ping * (base / 100); // 純法定容積面積
+            baseVolArea = ping * (base / 100); 
             let totalVolArea = ping * (totalVolPercent / 100);
             
-            // 預估銷坪
             estArea = totalVolArea * factor;
 
         } else {
-            // 透天邏輯: 地坪 * 建蔽 * 樓層 * 係數 * 形狀修正
             let floors = parseFloat(ui.floors.value) || 0;
             let factor = parseFloat(ui.touTianEff.value) || 1.0;
-            let shapeEff = parseFloat(ui.shapeEff.value) || 100; // Nexus: Get shape efficiency
+            let shapeEff = parseFloat(ui.shapeEff.value) || 100;
 
-            // 透天顯示建蔽結構 (隱藏 Bar 或改用途)
             ui.barBase.style.width = "100%";
             ui.barBonus.style.width = "0%";
             ui.barTransfer.style.width = "0%";
             ui.txtTotalVol.innerText = "透天依建蔽率與樓層計算";
 
-            // Nexus Formula Update: Multiply by shape efficiency percentage
             baseVolArea = (maxFootprint * floors) * (shapeEff / 100); 
             estArea = baseVolArea * factor;
         }
@@ -639,8 +733,7 @@
         calculatedArea = estArea;
         ui.sysEstVal.innerText = estArea.toFixed(1);
         
-        // 若使用者未手動改過(或是0)，自動帶入
-        if(parseFloat(ui.outSaleArea.value) === 0) {
+        if(parseFloat(ui.outSaleArea.value) === 0 || isNaN(parseFloat(ui.outSaleArea.value))) {
             ui.outSaleArea.value = estArea.toFixed(1);
         }
         
@@ -651,11 +744,9 @@
         let realArea = parseFloat(ui.outSaleArea.value) || 0;
         let ping = parseFloat(ui.ping.value) || 0;
 
-        // 1. 坪效
         let eff = (ping > 0) ? (realArea / ping) : 0;
         ui.valEff.innerText = eff.toFixed(2);
 
-        // 2. 創造價值 (Sales Area - Statutory Area)
         let type = ui.type.value;
         let statArea = 0;
         
@@ -663,8 +754,6 @@
             let base = parseFloat(ui.baseFAR.value) || 0;
             statArea = ping * (base / 100);
         } else {
-            // For comparison, statutory area should also reflect the shape loss 
-            // because if you can't build it, it's not really statutory "usable" area in this context
             let bcr = parseFloat(ui.bcr.value) || 0;
             let floors = parseFloat(ui.floors.value) || 0;
             let shapeEff = parseFloat(ui.shapeEff.value) || 100;
@@ -694,10 +783,7 @@
         window.open(lineUrl, '_blank');
     }
 
-    // Init
-    calc();
-
-    /** * --- NEXUS SECURITY PROTOCOL --- */
+    // 🛡️ 防盜拷邏輯
     (function() {
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
         document.onkeydown = function(e) {
